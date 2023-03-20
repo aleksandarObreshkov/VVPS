@@ -13,15 +13,17 @@ import org.springframework.stereotype.Service;
 public class PriceDependencies {
 
     public static class PriceDependenciesDiscounts {
-        public static final int ELDERLY = 10;
-        public static final int STUDENT = 20;
+        public static final int ELDERLY = 34;
+        public static final int FAMILY_CARD = 50;
         public static final int NOT_RUSH_HOUR = 5;
+        public static final int WITH_CHILD = 10;
     }
 
     private boolean withReturn;
     private boolean elderly;
     private boolean notRushHour;
     private boolean student;
-
+    private boolean isWithChild;
+    private boolean withFamilyCard;
 
 }

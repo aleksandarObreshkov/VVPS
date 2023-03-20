@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -30,7 +31,9 @@ public class TicketPriceCalculationService {
                                  PriceDependencies priceDependencies) {
         double finalPrice = getInitialTicketPrice(departureStation, arrivalStation);
         priceDependencies.setNotRushHour(isNotInRushHour(departureTime));
-        return calculateTicketPriceWithDiscounts(finalPrice, priceDependencies);
+        double discountFromCards = calculateDiscountFromCards(priceDependencies);
+
+        return calculateTicketPriceWithDiscounts(finalPrice, discountFromCards, priceDependencies.isWithReturn());
     }
 
     private double getInitialTicketPrice(Station startStation, Station endStation) {
@@ -44,41 +47,45 @@ public class TicketPriceCalculationService {
     }
 
     private boolean isNotInRushHour(LocalDateTime departureTime) {
-        if ((departureTime.getHour() >= 16 && departureTime.getHour() < 19) || (departureTime.getHour() >= 7 && departureTime.getHour() <= 9)) {
-            return false;
-        }
-        return true;
+        return !isInMorningRushHour(departureTime) && !isInEveningRushHour(departureTime);
     }
 
-    private double calculateTicketPriceWithDiscounts(double initialTicketPrice, PriceDependencies priceDependencies) {
-        double compoundDiscount = 0;
-        if (priceDependencies.isStudent()) {
-            compoundDiscount+=PriceDependencies.PriceDependenciesDiscounts.STUDENT;
+    private boolean isInMorningRushHour(LocalDateTime departureTime) {
+        LocalDateTime start = departureTime.with(LocalTime.of(7, 30));
+        LocalDateTime end = departureTime.with(LocalTime.of(9, 30));
+        return departureTime.isAfter(start) && departureTime.isBefore(end);
+    }
+
+    private boolean isInEveningRushHour(LocalDateTime departureTime) {
+        LocalDateTime start = departureTime.with(LocalTime.of(16, 0));
+        LocalDateTime end = departureTime.with(LocalTime.of(19, 30));
+        return departureTime.isAfter(start) && departureTime.isBefore(end);
+    }
+
+    private double calculateDiscountFromCards(PriceDependencies priceDependencies) {
+        if (priceDependencies.isWithChild()) {
+            if (priceDependencies.isWithFamilyCard()) {
+                return PriceDependencies.PriceDependenciesDiscounts.FAMILY_CARD;
+            }
+            return PriceDependencies.PriceDependenciesDiscounts.WITH_CHILD;
         }
 
         if (priceDependencies.isElderly()) {
-            compoundDiscount+=PriceDependencies.PriceDependenciesDiscounts.ELDERLY;
+            return PriceDependencies.PriceDependenciesDiscounts.ELDERLY;
         }
 
         if (priceDependencies.isNotRushHour()) {
-            compoundDiscount+=PriceDependencies.PriceDependenciesDiscounts.NOT_RUSH_HOUR;
+            return PriceDependencies.PriceDependenciesDiscounts.NOT_RUSH_HOUR;
         }
+        return 0;
+    }
 
-        initialTicketPrice = (100 - compoundDiscount) * initialTicketPrice / 100.0;
+    private double calculateTicketPriceWithDiscounts(double initialTicketPrice, double discount, boolean isWithReturn) {
+        initialTicketPrice = (100 - discount) * initialTicketPrice / 100.0;
 
-        if (priceDependencies.isWithReturn()) {
+        if (isWithReturn) {
             return initialTicketPrice*2;
         }
         return initialTicketPrice;
-    }
-
-    public double calculatePriceOld(Station start, Station end, boolean withReturn) {
-        double finalPrice = getInitialTicketPrice(start, end);
-
-        if (withReturn) {
-            return finalPrice*2;
-        }
-
-        return finalPrice;
     }
 }
