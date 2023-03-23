@@ -30,6 +30,10 @@ public class TicketReservationService {
                 travelParameters.getArrivalStation(),
                 travelParameters.getDepartureTime());
 
+        if (train.getTickets().size() >= train.getPassengerLimit()) {
+            throw new RuntimeException("There are not enough free seats on this train");
+        }
+
         double ticketPrice = ticketPriceCalculationService.calculatePrice(
                 travelParameters.getDepartureStation(),
                 travelParameters.getArrivalStation(),
