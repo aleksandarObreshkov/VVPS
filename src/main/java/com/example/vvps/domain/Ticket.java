@@ -1,9 +1,7 @@
 package com.example.vvps.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +12,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "ticket")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +26,9 @@ public class Ticket {
     private Station departureStation;
     private Station arrivalStation;
     private double price;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Train train;
 
     public Ticket(String passengerName, LocalDateTime departureTime, Station departureStation, Station arrivalStation, double price) {
         this.passengerName = passengerName;

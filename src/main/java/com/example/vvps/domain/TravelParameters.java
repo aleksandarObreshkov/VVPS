@@ -17,4 +17,5 @@ public class TravelParameters {
     private Station arrivalStation;
     private LocalDateTime departureTime;
     private PriceDependencies priceDependencies;
+    private Train train;
 }

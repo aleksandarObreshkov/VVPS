@@ -3,10 +3,8 @@ package com.example.vvps.service;
 import com.example.vvps.domain.PriceDependencies;
 import com.example.vvps.domain.Station;
 import com.example.vvps.domain.Course;
+import com.example.vvps.domain.Train;
 import com.example.vvps.repository.CourseRepository;
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,36 +12,47 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
-@Component
 public class TicketPriceCalculationService {
 
-    private List<Course> stationMap;
-
-    private CourseRepository courseRepository;
-
-    @PostConstruct
-    private void fillStationMap() {
-        stationMap = courseRepository.findAll();
+    public TicketPriceCalculationService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
     }
 
+    private final CourseRepository courseRepository;
+
     public double calculatePrice(Station departureStation, Station arrivalStation, LocalDateTime departureTime,
-                                 PriceDependencies priceDependencies) {
-        double finalPrice = getInitialTicketPrice(departureStation, arrivalStation);
+                                 PriceDependencies priceDependencies, Train train) {
+        double finalPrice = getInitialTicketPrice(departureStation, arrivalStation, train);
         priceDependencies.setNotRushHour(isNotInRushHour(departureTime));
         double discountFromCards = calculateDiscountFromCards(priceDependencies);
 
         return calculateTicketPriceWithDiscounts(finalPrice, discountFromCards, priceDependencies.isWithReturn());
     }
 
-    private double getInitialTicketPrice(Station startStation, Station endStation) {
-        for (Course entry : stationMap) {
-            if (entry.getDepartureStation().equals(startStation) && entry.getArrivalStation().equals(endStation)) {
-                return entry.getPrice();
+    private double getInitialTicketPrice(Station startStation, Station endStation, Train train) {
+        List<Station> stationRoute = train.getStationRoute();
+        double initialPrice = 0.0;
+        int startIndex = stationRoute.indexOf(startStation);
+        int endIndex = stationRoute.indexOf(endStation);
+
+        for (int i = startIndex; i <= endIndex; i+=2) {
+            Station departure = stationRoute.get(i);
+            Station arrival = stationRoute.get(i+1);
+            initialPrice += getPricePerCourse(departure, arrival);
+        }
+        return initialPrice;
+
+    }
+
+    private double getPricePerCourse(Station start, Station end) {
+        List<Course> stationMap = courseRepository.findAll();
+        for (Course currentCourse : stationMap) {
+            if (currentCourse.getDepartureStation().equals(start) &&
+            currentCourse.getArrivalStation().equals(end)) {
+                return currentCourse.getPrice();
             }
         }
-        throw new IllegalArgumentException(String.format("Could not find a train starting from %s and arriving at %s",
-                startStation.toString(), endStation.toString()));
+        throw new IllegalArgumentException(String.format("No such course %s -> %s", start, end));
     }
 
     private boolean isNotInRushHour(LocalDateTime departureTime) {

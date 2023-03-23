@@ -44,4 +44,9 @@ public class TrainController {
         return ResponseEntity.of(trainRepository.findById(UUID.fromString(id)));
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<Train>> getAllTrains() {
+        return ResponseEntity.ok(trainRepository.findAll());
+    }
+
 }

@@ -22,7 +22,6 @@ public class PriceDependencies {
     private boolean withReturn;
     private boolean elderly;
     private boolean notRushHour;
-    private boolean student;
     private boolean isWithChild;
     private boolean withFamilyCard;
 

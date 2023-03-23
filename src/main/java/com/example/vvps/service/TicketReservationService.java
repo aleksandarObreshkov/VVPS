@@ -34,7 +34,8 @@ public class TicketReservationService {
                 travelParameters.getDepartureStation(),
                 travelParameters.getArrivalStation(),
                 travelParameters.getDepartureTime(),
-                travelParameters.getPriceDependencies());
+                travelParameters.getPriceDependencies(),
+                train);
 
         // confirm payment from user
 
@@ -44,15 +45,17 @@ public class TicketReservationService {
                 .departureTime(travelParameters.getDepartureTime())
                 .passengerName(travelParameters.getPassengerName())
                 .price(ticketPrice)
+                .train(train)
                 .build();
-        ticketRepository.save(ticket);
-        return ticket;
+
+        train.addTicket(ticket);
+        return ticketRepository.save(ticket);
     }
 
     private Train checkIfTrainExists(Station departureStation, Station arrivalStation, LocalDateTime departureTime) {
-        List<Train> trains = trainRepository.findAllByDepartureStationAndDepartureTime(departureStation, departureTime);
+        List<Train> trains = trainRepository.findAllByDepartureTime(departureTime);
         for (Train t : trains) {
-            if (t.getStationRoute().contains(arrivalStation)){
+            if (t.getStationRoute().get(0).equals(departureStation) && t.getStationRoute().contains(arrivalStation)){
                 return t;
             }
         }
