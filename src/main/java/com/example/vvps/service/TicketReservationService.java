@@ -9,7 +9,6 @@ import com.example.vvps.repository.TrainRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -57,12 +56,10 @@ public class TicketReservationService {
                 return t;
             }
         }
-        if (trains.isEmpty()) {
-            throw new IllegalArgumentException(
-                    String.format("There is no train leaving from station %s, arriving on station %s, departing at %s",
-                            departureStation.toString(),
-                            arrivalStation.toString(),
-                            departureTime.toString()));
-        }
+        throw new IllegalArgumentException(
+                String.format("There is no train leaving from station %s, arriving on station %s, departing at %s",
+                        departureStation.toString(),
+                        arrivalStation.toString(),
+                        departureTime.toString()));
     }
 }

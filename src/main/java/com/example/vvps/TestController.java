@@ -61,6 +61,13 @@ public class TestController {
         train.setPassengerLimit(200);
         train.setDepartureTime(LocalDateTime.now());
         trainRepository.save(train);
+
+        Train train1 = new Train();
+        train1.setDepartureStation(Station.DOBRICH);
+        train1.setStationRoute(List.of(Station.SOFIA, Station.PLOVDIV, Station.VARNA));
+        train1.setPassengerLimit(250);
+        train1.setDepartureTime(LocalDateTime.now());
+        trainRepository.save(train1);
         return ResponseEntity.ok().build();
     }
 

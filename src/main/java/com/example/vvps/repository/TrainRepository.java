@@ -15,4 +15,5 @@ import java.util.UUID;
 public interface TrainRepository extends JpaRepository<Train, UUID> {
 
     List<Train> findAllByDepartureStationAndDepartureTime (Station departureStation, LocalDateTime departureTime);
+    List<Train> findAllByDepartureTime(LocalDateTime departureTime);
 }

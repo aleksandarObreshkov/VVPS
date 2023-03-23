@@ -42,7 +42,7 @@ class TicketPriceCalculationServiceTest {
         Station departureStation = Station.BURGAS;
         Station arrivalStation = Station.PLOVDIV;
         LocalDateTime departureTime = LocalDateTime.now();
-        PriceDependencies priceDependencies = new PriceDependencies(false, false, false, false);
+        PriceDependencies priceDependencies = new PriceDependencies(false, false, false, false, false, false);
         double expectedPrice = 19;
         assertEquals(expectedPrice, ticketPriceCalculationService.calculatePrice(departureStation, arrivalStation, departureTime, priceDependencies));
     }

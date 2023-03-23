@@ -49,7 +49,7 @@ public class TicketReservationServiceTest {
                 .priceDependencies(new PriceDependencies())
                 .build();
 
-        when(trainRepository.findAllByDepartureStationAndDepartureTimeAndStationRouteIn(departureStation, arrivalStation,
+        when(trainRepository.findAllByDepartureStationAndDepartureTime(departureStation,
                 departureTime)).thenReturn(Collections.emptyList());
 
         Throwable t = assertThrows(IllegalArgumentException.class, () -> ticketReservationService.reserveTicket(travelParameters));
@@ -74,7 +74,7 @@ public class TicketReservationServiceTest {
                 .build();
 
         Train train = new Train();
-        when(trainRepository.findAllByDepartureStationAndDepartureTimeAndStationRouteIn(departureStation, arrivalStation,
+        when(trainRepository.findAllByDepartureStationAndDepartureTime(departureStation,
                 departureTime)).thenReturn(Collections.singletonList(train));
 
         assertDoesNotThrow(() -> ticketReservationService.reserveTicket(travelParameters),
