@@ -21,14 +21,24 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
+    private String password;
     private boolean isAdmin;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Reservation> reservations;
 
     public Account(String name, boolean isAdmin) {
         this.name = name;
         this.isAdmin = isAdmin;
+    }
+
+    public void addReservation(Reservation reservation) {
+        this.reservations.add(reservation);
+        reservation.setAccount(this);
+    }
+
+    public void deleteReservation(Reservation reservation) {
+        this.reservations.remove(reservation);
+        reservation.setAccount(null);
     }
 }

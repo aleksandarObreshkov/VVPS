@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @Service
 public class ReservationService{
-    private final AccountRepository accountRepository;
     private final ReservationRepository reservationRepository;
 
     private final TicketReservationService ticketReservationService;
@@ -21,12 +20,10 @@ public class ReservationService{
     private final AccountService accountService;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              AccountRepository accountRepository,
                               TicketReservationService ticketReservationService,
                               TicketService ticketService,
                               AccountService accountService) {
         this.reservationRepository = reservationRepository;
-        this.accountRepository = accountRepository;
         this.ticketReservationService = ticketReservationService;
         this.ticketService = ticketService;
         this.accountService = accountService;
@@ -69,7 +66,11 @@ public class ReservationService{
             throw new IllegalArgumentException(String.format("Reservation with ID '%s' does not exist.", id));
         }
 
-        Reservation reservation = reservationOptional.get();
+        delete(reservationOptional.get());
+    }
+
+    @Transactional
+    public void delete(Reservation reservation) {
         reservation.getAccount().getReservations().remove(reservation);
         ticketService.deleteTickets(reservation.getTickets());
         reservationRepository.delete(reservation);

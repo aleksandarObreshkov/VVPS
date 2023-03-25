@@ -26,7 +26,6 @@ public class Reservation {
     private Account account;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Ticket> tickets = new ArrayList<>();
 
     public void addTicket(Ticket t) {

@@ -3,13 +3,14 @@ package com.example.vvps.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class AccountCreationParameters {
+@NoArgsConstructor
+public class AccountCredentials {
 
-    private String name;
+    private String username;
     private String password;
-    private boolean isAdmin;
 }

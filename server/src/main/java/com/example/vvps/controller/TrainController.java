@@ -41,7 +41,7 @@ public class TrainController {
         return ResponseEntity.ok(trainRepository.findAllByDepartureTime(departureDateTime));
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Train> getById(@PathVariable String id) {
         return ResponseEntity.of(trainRepository.findById(UUID.fromString(id)));
     }

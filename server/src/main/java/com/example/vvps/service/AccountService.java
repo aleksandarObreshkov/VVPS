@@ -5,6 +5,7 @@ import com.example.vvps.domain.Reservation;
 import com.example.vvps.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,16 +24,9 @@ public class AccountService {
         return newAccount;
     }
 
-    public void deleteAccount(String accountName) {
-        Account account = getAccount(accountName);
-        if (account == null) {
-            throw new IllegalArgumentException(String.format("No account with name %s found", accountName));
-        }
+    public void deleteById(String id) {
+        Account account = getById(id);
         accountRepository.delete(account);
-    }
-
-    public Account getAccount(String name) {
-        return accountRepository.findByName(name);
     }
 
     public Account getById(String id) {

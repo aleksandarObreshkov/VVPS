@@ -24,7 +24,6 @@ public class Train {
     private int passengerLimit;
     private LocalDateTime departureTime;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Ticket> tickets;
 
     public void addTicket(Ticket t) {
