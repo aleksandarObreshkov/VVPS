@@ -7,6 +7,19 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>cli</artifactId>
-    <name>Archetype - cli</name>
+    <name>cli</name>
     <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.14.2</version>
+        </dependency>
+    </dependencies>
 </project>
