@@ -29,12 +29,5 @@ public class Ticket {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     private Train train;
-
-    public Ticket(String passengerName, LocalDateTime departureTime, Station departureStation, Station arrivalStation, double price) {
-        this.passengerName = passengerName;
-        this.departureTime = departureTime;
-        this.departureStation = departureStation;
-        this.arrivalStation = arrivalStation;
-        this.price = price;
-    }
+    private String reservationId;
 }

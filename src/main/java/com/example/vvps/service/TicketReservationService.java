@@ -7,8 +7,10 @@ import com.example.vvps.domain.TravelParameters;
 import com.example.vvps.repository.TicketRepository;
 import com.example.vvps.repository.TrainRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -25,10 +27,13 @@ public class TicketReservationService {
     }
 
 
+    @Transactional
     public Ticket reserveTicket(TravelParameters travelParameters) {
+        LocalDateTime departureTime = LocalDateTime.parse(travelParameters.getDepartureTime(),
+                DateTimeFormatter.ofPattern("dd-MM-yyyy,HH:mm"));
         Train train = checkIfTrainExists(travelParameters.getDepartureStation(),
                 travelParameters.getArrivalStation(),
-                travelParameters.getDepartureTime());
+                departureTime);
 
         if (train.getTickets().size() >= train.getPassengerLimit()) {
             throw new RuntimeException("There are not enough free seats on this train");
@@ -37,7 +42,7 @@ public class TicketReservationService {
         double ticketPrice = ticketPriceCalculationService.calculatePrice(
                 travelParameters.getDepartureStation(),
                 travelParameters.getArrivalStation(),
-                travelParameters.getDepartureTime(),
+                departureTime,
                 travelParameters.getPriceDependencies(),
                 train);
 
@@ -46,7 +51,7 @@ public class TicketReservationService {
         Ticket ticket = Ticket.builder()
                 .departureStation(travelParameters.getDepartureStation())
                 .arrivalStation(travelParameters.getArrivalStation())
-                .departureTime(travelParameters.getDepartureTime())
+                .departureTime(departureTime)
                 .passengerName(travelParameters.getPassengerName())
                 .price(ticketPrice)
                 .train(train)
@@ -59,7 +64,7 @@ public class TicketReservationService {
     private Train checkIfTrainExists(Station departureStation, Station arrivalStation, LocalDateTime departureTime) {
         List<Train> trains = trainRepository.findAllByDepartureTime(departureTime);
         for (Train t : trains) {
-            if (t.getStationRoute().get(0).equals(departureStation) && t.getStationRoute().contains(arrivalStation)){
+            if (t.getStationRoute().contains(departureStation) && t.getStationRoute().contains(arrivalStation)){
                 return t;
             }
         }

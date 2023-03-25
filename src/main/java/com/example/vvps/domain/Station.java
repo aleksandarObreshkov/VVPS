@@ -8,5 +8,14 @@ public enum Station {
     ASENOVGRAD,
     SHUMEN,
     PLEVEN,
-    DOBRICH
+    DOBRICH;
+
+    public static Station parse(String value) {
+        for (Station s : Station.values()) {
+            if (s.toString().equalsIgnoreCase(value)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException(String.format("String %s could not be parsed to Station.",value));
+    }
 }

@@ -1,8 +1,12 @@
 package com.example.vvps.service;
 
 import com.example.vvps.domain.Account;
+import com.example.vvps.domain.Reservation;
 import com.example.vvps.repository.AccountRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -29,5 +33,22 @@ public class AccountService {
 
     public Account getAccount(String name) {
         return accountRepository.findByName(name);
+    }
+
+    public Account getById(String id) {
+        Optional<Account> accountOptional = accountRepository.findById(UUID.fromString(id));
+        if (accountOptional.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Account with ID %s does not exist", id));
+        }
+        return accountOptional.get();
+    }
+
+    public void updateAccountReservation(Account account, Reservation reservation) {
+        for (Reservation r : account.getReservations()) {
+            if (r.getId().equals(reservation.getId())) {
+                account.getReservations().remove(r);
+            }
+        }
+        account.getReservations().add(reservation);
     }
 }

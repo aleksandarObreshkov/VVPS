@@ -26,13 +26,13 @@ public class DataGenerationController {
         Train train = new Train();
         train.setStationRoute(List.of(Station.BURGAS,Station.PLOVDIV, Station.SOFIA, Station.PLEVEN, Station.DOBRICH));
         train.setPassengerLimit(200);
-        train.setDepartureTime(LocalDateTime.now());
+        train.setDepartureTime(LocalDateTime.of(2023, 4, 24, 12, 0));
         trainRepository.save(train);
 
         Train train1 = new Train();
         train1.setStationRoute(List.of(Station.DOBRICH, Station.SOFIA, Station.PLOVDIV, Station.VARNA));
         train1.setPassengerLimit(250);
-        train1.setDepartureTime(LocalDateTime.now());
+        train1.setDepartureTime(LocalDateTime.of(2023, 4, 24, 13, 0));
         trainRepository.save(train1);
 
         Course course = new Course(Station.BURGAS, Station.PLOVDIV, 20);

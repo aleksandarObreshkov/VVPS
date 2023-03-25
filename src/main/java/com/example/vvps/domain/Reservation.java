@@ -1,39 +1,41 @@
 package com.example.vvps.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "train")
-public class Train {
+@EqualsAndHashCode
+public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private List<Station> stationRoute;
-    private int passengerLimit;
-    private LocalDateTime departureTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Account account;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Ticket> tickets;
+    private List<Ticket> tickets = new ArrayList<>();
 
     public void addTicket(Ticket t) {
         tickets.add(t);
-        t.setTrain(this);
+        t.setReservationId(this.getId().toString());
     }
 
     public void removeTicket(Ticket t) {
         tickets.remove(t);
-        t.setTrain(null);
+        t.setReservationId(null);
     }
 }

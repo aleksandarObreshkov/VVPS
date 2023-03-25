@@ -15,7 +15,7 @@ public class TravelParameters {
     private String passengerName;
     private Station departureStation;
     private Station arrivalStation;
-    private LocalDateTime departureTime;
+    private String departureTime;
     private PriceDependencies priceDependencies;
     private Train train;
 }

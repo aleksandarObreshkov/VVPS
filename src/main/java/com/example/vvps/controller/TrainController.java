@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,17 +26,18 @@ public class TrainController {
     }
 
     @GetMapping("/destination/{destination}")
-    public ResponseEntity<List<Train>> getByDestination(@PathVariable Station destination) {
+    public ResponseEntity<List<Train>> getByDestination(@PathVariable String destination) {
         List<Train> allTrains = trainRepository.findAll();
         //Implement this as a JPA query
         return ResponseEntity.ok(allTrains.stream()
-                .filter(t -> t.getStationRoute().contains(destination))
+                .filter(t -> t.getStationRoute().contains(Station.parse(destination)))
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/departure-time/{departureTime}")
     public ResponseEntity<List<Train>> getByDepartureTime(@PathVariable String departureTime) {
-        LocalDateTime departureDateTime = LocalDateTime.parse(departureTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy.HH:mm");
+        LocalDateTime departureDateTime = LocalDateTime.parse(departureTime, formatter);
         return ResponseEntity.ok(trainRepository.findAllByDepartureTime(departureDateTime));
     }
 
