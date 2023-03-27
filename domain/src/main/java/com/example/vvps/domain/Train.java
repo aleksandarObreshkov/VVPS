@@ -1,6 +1,5 @@
 package com.example.vvps.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +18,7 @@ public class Train {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID trainId;
     private List<Station> stationRoute;
     private int passengerLimit;
     private LocalDateTime departureTime;

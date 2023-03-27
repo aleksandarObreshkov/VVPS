@@ -1,7 +1,6 @@
 package com.example.vvps.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +18,7 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID reservationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
@@ -30,11 +29,11 @@ public class Reservation {
 
     public void addTicket(Ticket t) {
         tickets.add(t);
-        t.setReservationId(this.getId().toString());
+        t.setReservation(this);
     }
 
     public void removeTicket(Ticket t) {
         tickets.remove(t);
-        t.setReservationId(null);
+        t.setReservation(null);
     }
 }

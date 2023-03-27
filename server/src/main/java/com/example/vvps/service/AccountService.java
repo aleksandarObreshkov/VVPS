@@ -5,7 +5,6 @@ import com.example.vvps.domain.Reservation;
 import com.example.vvps.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +28,11 @@ public class AccountService {
         accountRepository.delete(account);
     }
 
+    public boolean getIsAdminById(String id) {
+        Account account = getById(id);
+        return account.isAdmin();
+    }
+
     public Account getById(String id) {
         Optional<Account> accountOptional = accountRepository.findById(UUID.fromString(id));
         if (accountOptional.isEmpty()) {
@@ -39,7 +43,7 @@ public class AccountService {
 
     public void updateAccountReservation(Account account, Reservation reservation) {
         for (Reservation r : account.getReservations()) {
-            if (r.getId().equals(reservation.getId())) {
+            if (r.getReservationId().equals(reservation.getReservationId())) {
                 account.getReservations().remove(r);
             }
         }

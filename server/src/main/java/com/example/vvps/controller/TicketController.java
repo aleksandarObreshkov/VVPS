@@ -1,9 +1,8 @@
 package com.example.vvps.controller;
 
 import com.example.vvps.domain.Ticket;
-import com.example.vvps.domain.TravelParameters;
-import com.example.vvps.repository.TicketRepository;
-import com.example.vvps.service.TicketReservationService;
+import com.example.vvps.service.AccountService;
+import com.example.vvps.service.TicketService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,22 +12,20 @@ import java.util.List;
 @RequestMapping("/tickets")
 public class TicketController {
 
-    private final TicketReservationService ticketReservationService;
-    private final TicketRepository ticketRepository;
+    private final AccountService accountService;
+    private final TicketService ticketService;
 
-    public TicketController(TicketReservationService ticketReservationService, TicketRepository ticketRepository) {
-        this.ticketReservationService = ticketReservationService;
-        this.ticketRepository = ticketRepository;
-    }
-
-    @PostMapping("/reserve")
-    public ResponseEntity<Ticket> reserveTicket(@RequestBody TravelParameters travelParameters) {
-        return ResponseEntity.ok(ticketReservationService.reserveTicket(travelParameters));
+    public TicketController(AccountService accountService, TicketService ticketService) {
+        this.accountService = accountService;
+        this.ticketService = ticketService;
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Ticket>> getAll() {
-        return ResponseEntity.ok(ticketRepository.findAll());
+    public ResponseEntity<List<Ticket>> getAll(@RequestHeader("account_id") String accountId) {
+        if (!accountService.getIsAdminById(accountId)) {
+            return ResponseEntity.ok(ticketService.getAllByAccountId(accountId));
+        }
+        return ResponseEntity.ok(ticketService.getAll());
     }
 
 }

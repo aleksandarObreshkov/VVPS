@@ -1,7 +1,6 @@
 package com.example.vvps.service;
 
 import com.example.vvps.domain.*;
-import com.example.vvps.repository.AccountRepository;
 import com.example.vvps.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -27,7 +28,11 @@ public class Ticket {
     private Station arrivalStation;
     private double price;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JoinColumn(name = "train_id")
+    @JsonBackReference(value = "train_reference")
     private Train train;
-    private String reservationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="reservation_id")
+    @JsonBackReference(value = "reservation_reference")
+    private Reservation reservation;
 }

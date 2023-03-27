@@ -1,6 +1,7 @@
 package com.example.vvps.controller;
 
 import com.example.vvps.domain.*;
+import com.example.vvps.repository.AccountRepository;
 import com.example.vvps.repository.CourseRepository;
 import com.example.vvps.repository.TrainRepository;
 import jakarta.annotation.PostConstruct;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class DataGenerationController {
@@ -16,9 +18,12 @@ public class DataGenerationController {
 
     private final CourseRepository courseRepository;
 
-    public DataGenerationController(TrainRepository trainRepository, CourseRepository courseRepository) {
+    private final AccountRepository accountRepository;
+
+    public DataGenerationController(TrainRepository trainRepository, CourseRepository courseRepository, AccountRepository accountRepository) {
         this.trainRepository = trainRepository;
         this.courseRepository = courseRepository;
+        this.accountRepository = accountRepository;
     }
 
     @PostConstruct
@@ -40,5 +45,15 @@ public class DataGenerationController {
         Course course2 = new Course(Station.SOFIA, Station.PLEVEN, 15);
         Course course3 = new Course(Station.PLEVEN, Station.DOBRICH, 15);
         courseRepository.saveAll(List.of(course, course1, course2, course3));
+
+        Account root = Account.builder()
+                .id(UUID.fromString("a944205c-30e4-43de-8231-0fc32309d100"))
+                .name("root")
+                .password("root")
+                .reservations(null)
+                .isAdmin(true)
+                .build();
+
+        accountRepository.save(root);
     }
 }
