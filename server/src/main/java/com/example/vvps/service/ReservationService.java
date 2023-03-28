@@ -40,9 +40,11 @@ public class ReservationService{
                 .build();
 
         Reservation result = reservationRepository.save(reservation);
+        account.addReservation(reservation);
         if (isUpdate) {
             accountService.updateAccountReservation(account, result);
         }
+        ticketService.setTicketReservations(result.getTickets(), result);
         return result;
     }
 

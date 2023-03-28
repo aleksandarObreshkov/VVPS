@@ -54,6 +54,15 @@ public class DataGenerationController {
                 .isAdmin(true)
                 .build();
 
+        Account nonRoot = Account.builder()
+                .id(UUID.fromString("04e56bd3-739b-4043-b3df-466f41a2fa3e"))
+                .name("non-root")
+                .password("non-root")
+                .reservations(null)
+                .isAdmin(false)
+                .build();
+
         accountRepository.save(root);
+        accountRepository.save(nonRoot);
     }
 }

@@ -20,7 +20,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID reservationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonBackReference
     private Account account;
 
