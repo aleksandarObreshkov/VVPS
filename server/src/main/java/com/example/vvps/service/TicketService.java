@@ -3,6 +3,7 @@ package com.example.vvps.service;
 import com.example.vvps.domain.PriceDependencies;
 import com.example.vvps.domain.Reservation;
 import com.example.vvps.domain.Ticket;
+import com.example.vvps.error.NotFoundException;
 import com.example.vvps.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,7 @@ public class TicketService {
     public Ticket getById(String ticketId) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(UUID.fromString(ticketId));
         if (ticketOptional.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Ticket with ID '%s' does not exist"));
+            throw new NotFoundException(String.format("Ticket with ID '%s' does not exist", ticketId));
         }
         return ticketOptional.get();
     }

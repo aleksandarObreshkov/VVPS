@@ -1,10 +1,11 @@
 package com.example.vvps.service;
 
-import com.example.vvps.domain.Account;
-import com.example.vvps.domain.Reservation;
+import com.example.vvps.domain.*;
+import com.example.vvps.error.NotFoundException;
 import com.example.vvps.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,14 +18,23 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public Account createAccount(String name, boolean isAdmin) {
-        Account newAccount = new Account(name, isAdmin);
-        accountRepository.save(newAccount);
-        return newAccount;
+    public Account createAccount(AccountCreationParameters accountCreationParameters, String loggedAccountId) {
+        Account account = Account.builder()
+                .id(UUID.randomUUID())
+                .name(accountCreationParameters.getName())
+                .password(accountCreationParameters.getPassword())
+                .isAdmin(false)
+                .build();
+        if (!loggedAccountId.isEmpty() && getIsAdminById(loggedAccountId)) {
+            account.setAdmin(accountCreationParameters.isAdmin());
+        }
+        return accountRepository.save(account);
     }
 
     public void deleteById(String id) {
         Account account = getById(id);
+        List<Reservation> reservations = account.getReservations();
+        deleteReservationsFromAccount(account, reservations);
         accountRepository.delete(account);
     }
 
@@ -36,17 +46,36 @@ public class AccountService {
     public Account getById(String id) {
         Optional<Account> accountOptional = accountRepository.findById(UUID.fromString(id));
         if (accountOptional.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Account with ID %s does not exist", id));
+            throw new NotFoundException(String.format("Account with ID %s does not exist", id));
         }
         return accountOptional.get();
     }
 
     public void updateAccountReservation(Account account, Reservation reservation) {
-        for (Reservation r : account.getReservations()) {
-            if (r.getReservationId().equals(reservation.getReservationId())) {
-                account.getReservations().remove(r);
-            }
-        }
+        account.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
         account.getReservations().add(reservation);
     }
+
+    private void deleteReservationsFromAccount(Account account, List<Reservation> reservations) {
+        List<Reservation> reservationList = List.copyOf(reservations);
+        for (Reservation r : reservationList) {
+            List<Ticket> tickets = List.copyOf(r.getTickets());
+            for (Ticket t : tickets) {
+                Train train = t.getTrain();
+                train.removeTicket(t);
+                r.removeTicket(t);
+            }
+            account.deleteReservation(r);
+        }
+    }
+
+    public Account updateAccount(String accountId, AccountCreationParameters accountCreationParameters) {
+        Account account = getById(accountId);
+        account.setName(accountCreationParameters.getName());
+        account.setPassword(accountCreationParameters.getPassword());
+        account.setAdmin(accountCreationParameters.isAdmin());
+        return accountRepository.save(account);
+    }
+
+
 }

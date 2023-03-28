@@ -4,6 +4,7 @@ import com.example.vvps.domain.PriceDependencies;
 import com.example.vvps.domain.Station;
 import com.example.vvps.domain.Course;
 import com.example.vvps.domain.Train;
+import com.example.vvps.error.NotFoundException;
 import com.example.vvps.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class TicketPriceCalculationService {
                 return currentCourse.getPrice();
             }
         }
-        throw new IllegalArgumentException(String.format("No such course %s -> %s", start, end));
+        throw new NotFoundException(String.format("No such course %s -> %s", start, end));
     }
 
     private boolean isNotInRushHour(LocalDateTime departureTime) {

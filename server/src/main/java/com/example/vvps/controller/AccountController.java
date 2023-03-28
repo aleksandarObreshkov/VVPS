@@ -30,14 +30,10 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Account> createAccount(@RequestBody AccountCreationParameters accountCreationParameters) {
-        Account account = Account.builder()
-                .id(UUID.randomUUID())
-                .name(accountCreationParameters.getName())
-                .password(accountCreationParameters.getPassword())
-                .isAdmin(accountCreationParameters.isAdmin())
-                .build();
-        return ResponseEntity.ok(accountRepository.save(account));
+    public ResponseEntity<Account> createAccount(@RequestBody AccountCreationParameters accountCreationParameters,
+                                                 @RequestHeader("account_id") String accountId) {
+
+        return ResponseEntity.ok(accountService.createAccount(accountCreationParameters, accountId));
     }
 
     @GetMapping("/all")
@@ -66,5 +62,15 @@ public class AccountController {
         }
         accountService.deleteById(id);
         return ResponseEntity.status(202).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Account> updateById(@PathVariable String id,
+                                              @RequestHeader("account_id") String loggedAccountId,
+                                              @RequestBody AccountCreationParameters accountCreationParameters) throws IllegalAccessException {
+        if (!accountRepository.getIsAdminById(UUID.fromString(loggedAccountId))) {
+            throw new IllegalAccessException("You don't have access to this functionality");
+        }
+        return ResponseEntity.ok(accountService.updateAccount(id, accountCreationParameters));
     }
 }

@@ -1,13 +1,9 @@
 package com.example.vvps.controller;
 
-import com.example.vvps.domain.Account;
 import com.example.vvps.domain.Reservation;
 import com.example.vvps.domain.ReservationCreationParameters;
 import com.example.vvps.service.AccountService;
 import com.example.vvps.service.ReservationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,7 +54,7 @@ public class ReservationController {
                                            @RequestHeader("account_id") String accountId) throws IllegalAccessException {
         Reservation reservation = reservationService.getById(id);
         if (!reservation.getAccount().getId().equals(UUID.fromString(accountId)) &&
-                !reservation.getAccount().isAdmin()) {
+                !accountService.getIsAdminById(accountId)) {
             throw new IllegalAccessException("You don't have access to this reservation");
         }
         reservationService.deleteById(id);

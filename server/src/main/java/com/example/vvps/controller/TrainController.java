@@ -28,7 +28,6 @@ public class TrainController {
     @GetMapping("/destination/{destination}")
     public ResponseEntity<List<Train>> getByDestination(@PathVariable String destination) {
         List<Train> allTrains = trainRepository.findAll();
-        //Implement this as a JPA query
         return ResponseEntity.ok(allTrains.stream()
                 .filter(t -> t.getStationRoute().contains(Station.parse(destination)))
                 .collect(Collectors.toList()));

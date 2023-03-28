@@ -1,6 +1,7 @@
 package com.example.vvps.service;
 
 import com.example.vvps.domain.*;
+import com.example.vvps.error.NotFoundException;
 import com.example.vvps.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class ReservationService{
     public Reservation getById(String id) {
         Optional<Reservation> reservationOptional = reservationRepository.findById(UUID.fromString(id));
         if (reservationOptional.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Reservation with ID '%s' could not be found", id));
+            throw new NotFoundException(String.format("Reservation with ID '%s' could not be found", id));
         }
         return reservationOptional.get();
     }
@@ -62,12 +63,8 @@ public class ReservationService{
 
     @Transactional
     public void deleteById(String id) {
-        Optional<Reservation> reservationOptional = reservationRepository.findById(UUID.fromString(id));
-        if (reservationOptional.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Reservation with ID '%s' does not exist.", id));
-        }
-
-        delete(reservationOptional.get());
+        Reservation reservation = getById(id);
+        delete(reservation);
     }
 
     @Transactional
