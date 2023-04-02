@@ -17,6 +17,8 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final AccountService accountService;
 
+    private static final String ACCESS_DENIED_ERROR_MESSAGE = "You don't have access to this reservation";
+
     public ReservationController(ReservationService reservationService, AccountService accountService) {
         this.reservationService = reservationService;
         this.accountService = accountService;
@@ -44,7 +46,7 @@ public class ReservationController {
         Reservation reservation = reservationService.getById(id);
         if (!reservation.getAccount().getId().equals(UUID.fromString(accountId)) &&
                 !reservation.getAccount().isAdmin()) {
-            throw new IllegalAccessException("You don't have access to this reservation");
+            throw new IllegalAccessException(ACCESS_DENIED_ERROR_MESSAGE);
         }
         return ResponseEntity.ok(reservationService.getById(id));
     }
@@ -55,7 +57,7 @@ public class ReservationController {
         Reservation reservation = reservationService.getById(id);
         if (!reservation.getAccount().getId().equals(UUID.fromString(accountId)) &&
                 !accountService.getIsAdminById(accountId)) {
-            throw new IllegalAccessException("You don't have access to this reservation");
+            throw new IllegalAccessException(ACCESS_DENIED_ERROR_MESSAGE);
         }
         reservationService.deleteById(id);
         return ResponseEntity.status(202).build();
@@ -68,7 +70,7 @@ public class ReservationController {
         Reservation reservation = reservationService.getById(id);
         if (!reservation.getAccount().getId().toString().equals(accountId) &&
                 !accountService.getIsAdminById(accountId)) {
-            throw new IllegalAccessException("You don't have access to this reservation");
+            throw new IllegalAccessException(ACCESS_DENIED_ERROR_MESSAGE);
         }
         return ResponseEntity.ok(reservationService.updateReservation(id, reservationCreationParameters));
     }

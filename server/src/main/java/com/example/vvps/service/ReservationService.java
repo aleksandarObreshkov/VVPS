@@ -88,7 +88,7 @@ public class ReservationService{
     }
 
     @Transactional
-    void removeTickets(Reservation reservation) {
+    public void removeTickets(Reservation reservation) {
         List<Ticket> tickets = List.copyOf(reservation.getTickets());
         for (Ticket t : tickets) {
             reservation.removeTicket(t);

@@ -12,7 +12,6 @@
     <modules>
         <module>domain</module>
         <module>server</module>
-        <module>cli</module>
     </modules>
 
     <groupId>com.example</groupId>

@@ -30,7 +30,7 @@ public class TrainController {
         List<Train> allTrains = trainRepository.findAll();
         return ResponseEntity.ok(allTrains.stream()
                 .filter(t -> t.getStationRoute().contains(Station.parse(destination)))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     @GetMapping("/departure-time/{departureTime}")
