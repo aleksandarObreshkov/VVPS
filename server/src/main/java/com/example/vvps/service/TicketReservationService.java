@@ -4,6 +4,7 @@ import com.example.vvps.domain.Station;
 import com.example.vvps.domain.Ticket;
 import com.example.vvps.domain.Train;
 import com.example.vvps.domain.TravelParameters;
+import com.example.vvps.error.NotFoundException;
 import com.example.vvps.repository.TicketRepository;
 import com.example.vvps.repository.TrainRepository;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -19,6 +21,8 @@ public class TicketReservationService {
     private final TicketPriceCalculationService ticketPriceCalculationService;
     private final TicketRepository ticketRepository;
     private final TrainRepository trainRepository;
+
+    private static final String DATE_FORMAT = "dd-MM-yyyy,HH:mm";
 
     public TicketReservationService(TicketPriceCalculationService ticketPriceCalculationService, TicketRepository ticketRepository, TrainRepository trainRepository) {
         this.ticketPriceCalculationService = ticketPriceCalculationService;
@@ -29,8 +33,15 @@ public class TicketReservationService {
 
     @Transactional
     public Ticket reserveTicket(TravelParameters travelParameters) {
-        LocalDateTime departureTime = LocalDateTime.parse(travelParameters.getDepartureTime(),
-                DateTimeFormatter.ofPattern("dd-MM-yyyy,HH:mm"));
+        LocalDateTime departureTime;
+        try {
+
+            departureTime = LocalDateTime.parse(travelParameters.getDepartureTime(),
+                    DateTimeFormatter.ofPattern(DATE_FORMAT));
+        } catch (DateTimeParseException dateTimeParseException) {
+            throw new IllegalArgumentException("Invalid date format. Should be " + DATE_FORMAT);
+        }
+
         Train train = checkIfTrainExists(travelParameters.getDepartureStation(),
                 travelParameters.getArrivalStation(),
                 departureTime);
@@ -46,8 +57,6 @@ public class TicketReservationService {
                 travelParameters.getPriceDependencies(),
                 train);
 
-        // confirm payment from user
-
         Ticket ticket = Ticket.builder()
                 .departureStation(travelParameters.getDepartureStation())
                 .arrivalStation(travelParameters.getArrivalStation())
@@ -61,14 +70,14 @@ public class TicketReservationService {
         return ticketRepository.save(ticket);
     }
 
-    private Train checkIfTrainExists(Station departureStation, Station arrivalStation, LocalDateTime departureTime) {
+    Train checkIfTrainExists(Station departureStation, Station arrivalStation, LocalDateTime departureTime) {
         List<Train> trains = trainRepository.findAllByDepartureTime(departureTime);
         for (Train t : trains) {
             if (t.getStationRoute().contains(departureStation) && t.getStationRoute().contains(arrivalStation)){
                 return t;
             }
         }
-        throw new IllegalArgumentException(
+        throw new NotFoundException(
                 String.format("There is no train leaving from station %s, arriving on station %s, departing at %s",
                         departureStation.toString(),
                         arrivalStation.toString(),

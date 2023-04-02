@@ -23,20 +23,20 @@ public class TicketPriceCalculationService {
 
     public double calculatePrice(Station departureStation, Station arrivalStation, LocalDateTime departureTime,
                                  PriceDependencies priceDependencies, Train train) {
-        double finalPrice = getInitialTicketPrice(departureStation, arrivalStation, train);
+        double defaultTicketPrice = getInitialTicketPrice(departureStation, arrivalStation, train);
         priceDependencies.setNotRushHour(isNotInRushHour(departureTime));
-        double discountFromCards = calculateDiscountFromCards(priceDependencies);
+        double discountFromCards = calculateDiscountFromPriceDependencies(priceDependencies);
 
-        return calculateTicketPriceWithDiscounts(finalPrice, discountFromCards, priceDependencies.isWithReturn());
+        return calculateTicketPriceWithDiscounts(defaultTicketPrice, discountFromCards, priceDependencies.isWithReturn());
     }
 
-    private double getInitialTicketPrice(Station startStation, Station endStation, Train train) {
+    double getInitialTicketPrice(Station startStation, Station endStation, Train train) {
         List<Station> stationRoute = train.getStationRoute();
-        double initialPrice = 0.0;
+        double initialPrice = 0;
         int startIndex = stationRoute.indexOf(startStation);
         int endIndex = stationRoute.indexOf(endStation);
 
-        for (int i = startIndex; i <= endIndex; i+=2) {
+        for (int i = startIndex; i < endIndex; i++) {
             Station departure = stationRoute.get(i);
             Station arrival = stationRoute.get(i+1);
             initialPrice += getPricePerCourse(departure, arrival);
@@ -45,7 +45,7 @@ public class TicketPriceCalculationService {
 
     }
 
-    private double getPricePerCourse(Station start, Station end) {
+    double getPricePerCourse(Station start, Station end) {
         List<Course> stationMap = courseRepository.findAll();
         for (Course currentCourse : stationMap) {
             if (currentCourse.getDepartureStation().equals(start) &&
@@ -72,22 +72,25 @@ public class TicketPriceCalculationService {
         return departureTime.isAfter(start) && departureTime.isBefore(end);
     }
 
-    private double calculateDiscountFromCards(PriceDependencies priceDependencies) {
+    double calculateDiscountFromPriceDependencies(PriceDependencies priceDependencies) {
+        double compoundDiscount = 0;
+        if (priceDependencies.isNotRushHour()) {
+            compoundDiscount += PriceDependencies.PriceDependenciesDiscounts.NOT_RUSH_HOUR;
+        }
         if (priceDependencies.isWithChild()) {
             if (priceDependencies.isWithFamilyCard()) {
-                return PriceDependencies.PriceDependenciesDiscounts.FAMILY_CARD;
+                compoundDiscount += PriceDependencies.PriceDependenciesDiscounts.FAMILY_CARD;
+                return compoundDiscount;
+            } else {
+                compoundDiscount += PriceDependencies.PriceDependenciesDiscounts.WITH_CHILD;
             }
-            return PriceDependencies.PriceDependenciesDiscounts.WITH_CHILD;
         }
 
         if (priceDependencies.isElderly()) {
-            return PriceDependencies.PriceDependenciesDiscounts.ELDERLY;
+            compoundDiscount += PriceDependencies.PriceDependenciesDiscounts.ELDERLY;
         }
 
-        if (priceDependencies.isNotRushHour()) {
-            return PriceDependencies.PriceDependenciesDiscounts.NOT_RUSH_HOUR;
-        }
-        return 0;
+        return compoundDiscount;
     }
 
     private double calculateTicketPriceWithDiscounts(double initialTicketPrice, double discount, boolean isWithReturn) {
