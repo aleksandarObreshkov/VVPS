@@ -73,7 +73,8 @@ public class TicketReservationService {
     Train checkIfTrainExists(Station departureStation, Station arrivalStation, LocalDateTime departureTime) {
         List<Train> trains = trainRepository.findAllByDepartureTime(departureTime);
         for (Train t : trains) {
-            if (t.getStationRoute().contains(departureStation) && t.getStationRoute().contains(arrivalStation)){
+            if ((t.getStationRoute().contains(departureStation) && t.getStationRoute().contains(arrivalStation)) &&
+                    (t.getStationRoute().indexOf(departureStation) < t.getStationRoute().indexOf(arrivalStation))){
                 return t;
             }
         }

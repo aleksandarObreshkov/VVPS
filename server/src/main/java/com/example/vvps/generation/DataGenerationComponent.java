@@ -1,4 +1,4 @@
-package com.example.vvps.controller;
+package com.example.vvps.generation;
 
 import com.example.vvps.domain.*;
 import com.example.vvps.repository.AccountRepository;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class DataGenerationController {
+public class DataGenerationComponent {
 
     private final TrainRepository trainRepository;
 
@@ -20,7 +20,7 @@ public class DataGenerationController {
 
     private final AccountRepository accountRepository;
 
-    public DataGenerationController(TrainRepository trainRepository, CourseRepository courseRepository, AccountRepository accountRepository) {
+    public DataGenerationComponent(TrainRepository trainRepository, CourseRepository courseRepository, AccountRepository accountRepository) {
         this.trainRepository = trainRepository;
         this.courseRepository = courseRepository;
         this.accountRepository = accountRepository;

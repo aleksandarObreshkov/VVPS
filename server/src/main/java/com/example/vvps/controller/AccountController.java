@@ -24,8 +24,8 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Account> getByCredentials(@RequestBody AccountCredentials accountCredentials) {
-        return ResponseEntity.ok(accountRepository.findByNameAndPassword(accountCredentials.getUsername(),
+    public ResponseEntity<Account> login(@RequestBody AccountCredentials accountCredentials) {
+        return ResponseEntity.ok(accountService.getByUsernameAndPassword(accountCredentials.getUsername(),
                 accountCredentials.getPassword()));
     }
 
@@ -38,9 +38,7 @@ public class AccountController {
 
     @GetMapping("/all")
     public ResponseEntity<List<Account>> getAll(@RequestHeader("account_id") String id) throws IllegalAccessException {
-        if (!accountService.getIsAdminById(id)) {
-            throw new IllegalAccessException("You don't have access to all accounts");
-        }
+        accountService.validateUserIsAdmin(id);
         return ResponseEntity.ok(accountRepository.findAll());
     }
 
@@ -48,18 +46,14 @@ public class AccountController {
     @GetMapping("/{id}")
     public ResponseEntity<Account> getById(@PathVariable String id,
                                            @RequestHeader("account_id") String loggedAccountId) throws IllegalAccessException {
-        if (!accountRepository.getIsAdminById(UUID.fromString(loggedAccountId))) {
-            throw new IllegalAccessException("You don't have access to this account");
-        }
+        accountService.validateUserIsAdmin(loggedAccountId);
         return ResponseEntity.of(accountRepository.findById(UUID.fromString(id)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable String id,
                                            @RequestHeader("account_id") String loggedAccountId) throws IllegalAccessException {
-        if (!accountRepository.getIsAdminById(UUID.fromString(loggedAccountId))) {
-            throw new IllegalAccessException("You don't have access to this account");
-        }
+        accountService.validateUserIsAdmin(loggedAccountId);
         accountService.deleteById(id);
         return ResponseEntity.status(202).build();
     }
@@ -68,9 +62,7 @@ public class AccountController {
     public ResponseEntity<Account> updateById(@PathVariable String id,
                                               @RequestHeader("account_id") String loggedAccountId,
                                               @RequestBody AccountCreationParameters accountCreationParameters) throws IllegalAccessException {
-        if (!accountRepository.getIsAdminById(UUID.fromString(loggedAccountId))) {
-            throw new IllegalAccessException("You don't have access to this functionality");
-        }
+        accountService.validateUserIsAdmin(loggedAccountId);
         return ResponseEntity.ok(accountService.updateAccount(id, accountCreationParameters));
     }
 }

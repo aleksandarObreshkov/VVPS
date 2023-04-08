@@ -1,5 +1,6 @@
 package com.example.vvps.service;
 
+import com.example.vvps.TestData;
 import com.example.vvps.domain.Station;
 import com.example.vvps.domain.Train;
 import com.example.vvps.error.NotFoundException;
@@ -32,7 +33,7 @@ class TicketReservationServiceTest {
 
     @Test
     void testCheckIfTrainExistsTrue() {
-        Train defaultTrain = createDummyTrain();
+        Train defaultTrain = TestData.createDummyTrain();
         when(trainRepository.findAllByDepartureTime(any(LocalDateTime.class))).thenReturn(List.of(defaultTrain));
         Train train =
                 ticketReservationService.checkIfTrainExists(Station.PLOVDIV, Station.ASENOVGRAD, LocalDateTime.now());
@@ -41,27 +42,17 @@ class TicketReservationServiceTest {
 
     @Test
     void testCheckIfTrainExistsFalse() {
-        Train defaultTrain = createDummyTrain();
+        Train defaultTrain = TestData.createDummyTrain();
         LocalDateTime departureTime = LocalDateTime.now();
         Station departureStation = Station.VARNA;
         Station arrivalStation = Station.DOBRICH;
         when(trainRepository.findAllByDepartureTime(departureTime)).thenReturn(List.of(defaultTrain));
         NotFoundException notFoundException = assertThrows(NotFoundException.class, () ->
-                ticketReservationService.checkIfTrainExists(Station.VARNA, Station.DOBRICH, departureTime));
+                ticketReservationService.checkIfTrainExists(departureStation, arrivalStation, departureTime));
 
         assertEquals(String.format("There is no train leaving from station %s, arriving on station %s, departing at %s",
                 departureStation, arrivalStation, departureTime), notFoundException.getError());
 
     }
 
-    private Train createDummyTrain() {
-        List<Station> trainStationRoute = List.of(Station.DOBRICH, Station.SHUMEN, Station.PLEVEN, Station.SOFIA,
-                Station.PLOVDIV, Station.ASENOVGRAD, Station.BURGAS);
-        return Train.builder()
-                .trainId(UUID.randomUUID())
-                .departureTime(LocalDateTime.now())
-                .stationRoute(trainStationRoute)
-                .tickets(new ArrayList<>())
-                .build();
-    }
 }

@@ -17,7 +17,7 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final AccountService accountService;
 
-    private static final String ACCESS_DENIED_ERROR_MESSAGE = "You don't have access to this reservation";
+    static final String ACCESS_DENIED_ERROR_MESSAGE = "You don't have access to this reservation";
 
     public ReservationController(ReservationService reservationService, AccountService accountService) {
         this.reservationService = reservationService;
@@ -45,7 +45,7 @@ public class ReservationController {
                                                @RequestHeader("account_id") String accountId) throws IllegalAccessException {
         Reservation reservation = reservationService.getById(id);
         if (!reservation.getAccount().getId().equals(UUID.fromString(accountId)) &&
-                !reservation.getAccount().isAdmin()) {
+                !accountService.getIsAdminById(accountId)) {
             throw new IllegalAccessException(ACCESS_DENIED_ERROR_MESSAGE);
         }
         return ResponseEntity.ok(reservationService.getById(id));

@@ -51,6 +51,15 @@ public class AccountService {
         return accountOptional.get();
     }
 
+    public Account getByUsernameAndPassword(String username, String password) {
+        Account account = accountRepository.findByNameAndPassword(username, password);
+        if (account == null) {
+            throw new IllegalArgumentException(
+                    String.format("Account with username %s and password %s does not exist", username, password));
+        }
+        return account;
+    }
+
     public void updateAccountReservation(Account account, Reservation reservation) {
         account.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
         account.getReservations().add(reservation);
@@ -75,6 +84,12 @@ public class AccountService {
         account.setPassword(accountCreationParameters.getPassword());
         account.setAdmin(accountCreationParameters.isAdmin());
         return accountRepository.save(account);
+    }
+
+    public void validateUserIsAdmin(String id) throws IllegalAccessException {
+        if (!accountRepository.getIsAdminById(UUID.fromString(id))) {
+            throw new IllegalAccessException("You don't have access to this account");
+        }
     }
 
 
