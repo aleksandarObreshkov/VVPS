@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Data
 @Builder
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Service;
 public class PriceDependencies {
 
     public static class PriceDependenciesDiscounts {
+
+        private PriceDependenciesDiscounts() {}
         public static final int ELDERLY = 34;
         public static final int FAMILY_CARD = 50;
         public static final int NOT_RUSH_HOUR = 5;

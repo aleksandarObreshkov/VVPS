@@ -1,8 +1,6 @@
 package com.example.vvps.service;
 
 import com.example.vvps.TestData;
-import com.example.vvps.domain.PriceDependencies;
-import com.example.vvps.domain.Station;
 import com.example.vvps.domain.Ticket;
 import com.example.vvps.domain.Train;
 import com.example.vvps.repository.TicketRepository;
@@ -12,11 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 

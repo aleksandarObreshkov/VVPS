@@ -46,7 +46,10 @@ public class AccountController {
     @GetMapping("/{id}")
     public ResponseEntity<Account> getById(@PathVariable String id,
                                            @RequestHeader("account_id") String loggedAccountId) throws IllegalAccessException {
-        accountService.validateUserIsAdmin(loggedAccountId);
+        Account searchedAccount = accountService.getById(id);
+        if (!searchedAccount.getId().toString().equals(loggedAccountId)) {
+            accountService.validateUserIsAdmin(loggedAccountId);
+        }
         return ResponseEntity.of(accountRepository.findById(UUID.fromString(id)));
     }
 
@@ -62,7 +65,12 @@ public class AccountController {
     public ResponseEntity<Account> updateById(@PathVariable String id,
                                               @RequestHeader("account_id") String loggedAccountId,
                                               @RequestBody AccountCreationParameters accountCreationParameters) throws IllegalAccessException {
-        accountService.validateUserIsAdmin(loggedAccountId);
-        return ResponseEntity.ok(accountService.updateAccount(id, accountCreationParameters));
+        Account searchedAccount = accountService.getById(id);
+        boolean isLoggedUserAdmin = false;
+        if (!searchedAccount.getId().toString().equals(loggedAccountId)) {
+            accountService.validateUserIsAdmin(loggedAccountId);
+            isLoggedUserAdmin = true;
+        }
+        return ResponseEntity.ok(accountService.updateAccount(id, accountCreationParameters, isLoggedUserAdmin));
     }
 }

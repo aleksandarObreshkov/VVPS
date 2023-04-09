@@ -47,7 +47,7 @@ public class TicketReservationService {
                 departureTime);
 
         if (train.getTickets().size() >= train.getPassengerLimit()) {
-            throw new RuntimeException("There are not enough free seats on this train");
+            throw new IllegalStateException("There are not enough free seats on this train");
         }
 
         double ticketPrice = ticketPriceCalculationService.calculatePrice(

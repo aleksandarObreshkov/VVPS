@@ -30,7 +30,7 @@ public class DataGenerationComponent {
     public void createNew() {
         Train train = new Train();
         train.setStationRoute(List.of(Station.BURGAS,Station.PLOVDIV, Station.SOFIA, Station.PLEVEN, Station.DOBRICH));
-        train.setPassengerLimit(200);
+        train.setPassengerLimit(3);
         train.setDepartureTime(LocalDateTime.of(2023, 4, 24, 12, 0));
         trainRepository.save(train);
 

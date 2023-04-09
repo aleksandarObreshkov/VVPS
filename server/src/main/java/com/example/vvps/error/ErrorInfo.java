@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ErrorInfo {
 
-    private String error;
+    private final String error;
 
     public ErrorInfo(String message) {
         this.error = message;

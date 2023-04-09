@@ -78,17 +78,21 @@ public class AccountService {
         }
     }
 
-    public Account updateAccount(String accountId, AccountCreationParameters accountCreationParameters) {
+    public Account updateAccount(String accountId, AccountCreationParameters accountCreationParameters,
+                                 boolean loggedAccountIsAdmin) {
         Account account = getById(accountId);
         account.setName(accountCreationParameters.getName());
         account.setPassword(accountCreationParameters.getPassword());
-        account.setAdmin(accountCreationParameters.isAdmin());
+        if (loggedAccountIsAdmin) {
+            account.setAdmin(accountCreationParameters.isAdmin());
+        }
+        account.setAdmin(false);
         return accountRepository.save(account);
     }
 
     public void validateUserIsAdmin(String id) throws IllegalAccessException {
         if (!accountRepository.getIsAdminById(UUID.fromString(id))) {
-            throw new IllegalAccessException("You don't have access to this account");
+            throw new IllegalAccessException("You don't have access!");
         }
     }
 
